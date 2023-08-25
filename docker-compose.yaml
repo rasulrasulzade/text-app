@@ -38,6 +38,6 @@ services:
     image: text-app-frontend
     container_name: text-app-frontend
     build:
-      context: ./fe-text-app
+      context: ./frontend
     ports:
       - "3000:3000"
