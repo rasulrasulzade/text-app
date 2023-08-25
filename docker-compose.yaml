@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  postgresDB:
+    image: postgres:14-alpine
+    container_name: postgresDB
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - "./volumes/db:/var/lib/postgresql/data"
+
+  backend:
+    depends_on:
+      - postgresDB
+    image: text-app-backend
+    container_name: text-app-backend
+    build:
+        context: ./be-text-app
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    environment:
+      POSTGRES_HOST: postgresDB
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: postgres
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: 1234
+
+  frontend:
+    depends_on:
+      - postgresDB
+      - backend
+    image: text-app-frontend
+    container_name: text-app-frontend
+    build:
+      context: ./fe-text-app
+    ports:
+      - "3000:3000"
